@@ -18,4 +18,13 @@ node {
             }
         }
     }
+    stage('Deploy') {
+        docker.image('cdrx/pyinstaller-linux:python2').inside {
+            try {
+                sh 'ls'
+            } catch (Exception e) {
+                echo 'Error: ' + e.toString()
+            }
+        }
+    }
 }
