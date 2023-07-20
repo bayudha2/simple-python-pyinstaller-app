@@ -12,4 +12,10 @@ node {
             junit 'test-reports/results.xml'
         }
     }
+    withDockerContainer('cdrx/pyinstaller-linux:python2') {
+        stage('Deploy') {
+            checkout scm
+            sh 'ls'
+        }
+    }
 }
