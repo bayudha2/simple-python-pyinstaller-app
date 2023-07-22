@@ -14,6 +14,9 @@ node {
             junit 'test-reports/results.xml'
         }
     }
+    stage('Manual Approval') {
+        input message: 'Finished using the web site? (Click "Proceed" to continue)'
+    }
     stage('Deploy') {
         try {
             env.VOLUME = "${pwd()}/sources:/src"
