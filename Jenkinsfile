@@ -1,24 +1,16 @@
 node {
-    stage('Build') {
-        docker.image('python:2-alpine').inside {
-            sh 'ls'
-            sh 'pwd'
+     withDockerContainer('python:2-alpine') {
+        stage('Build') {
+            checkout scm
             sh 'python -m py_compile sources/add2vals.py sources/calc.py'
             stash(name: 'compiled-results', includes: 'sources/*.py*') 
         }
     }
-    stage('Test') {
-        docker.image('qnib/pytest').inside {
-            try {
-                sh 'py.test --verbose --junit-xml test-reports/results.xml sources/test_calc.py'
-            } catch (Exception e) {
-                echo 'Error: ' + e.toString()
-            } finally {
-                always {
-                    junit 'test-reports/results.xml'
-                }
-                input message: 'Lanjutkan ke tahap Deploy? (Click "Proceed" to continue)'
-            }
+    withDockerContainer('qnib/pytest') {
+        stage('Test') {
+            checkout scm
+            sh 'py.test --verbose --junit-xml test-reports/results.xml sources/test_calc.py'
+            junit 'test-reports/results.xml'
         }
     }
     stage('Deploy') {
